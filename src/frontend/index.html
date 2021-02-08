@@ -1,0 +1,48 @@
+<head>
+
+</head>
+<body>
+    <ul id="output">
+
+
+
+    </ul>
+    <form id="form">
+        <input type="text" id="comm" name="comm"/>
+        <input type="submit" value="Submit"/>
+        <button id="kill"> Kill</button>
+    </form>
+
+    <script src="https://cdn.socket.io/3.1.1/socket.io.min.js"></script>
+    <script>
+      var socket = io("localhost:3000");
+      var form = document.getElementById('form');
+      var input = document.getElementById('comm');
+      var output = document.getElementById('output');
+      form.addEventListener('submit',function(e){
+          e.preventDefault();
+          if(input.value){
+              socket.emit('command',input.value);
+              input.value='';
+          }
+      });
+      socket.on('output',function(msg){
+          var item = document.createElement('li');
+          if(typeof msg ==='string'){
+            item.textContent= msg;
+          }else{
+              var enc = new TextDecoder("utf-8");
+              item.textContent= enc.decode(msg);
+          }
+          output.appendChild(item);
+          window.scrollTo(0,document.body.scrollHeight);
+      });
+      var btnKill = document.getElementById('kill');
+      btnKill.addEventListener('click',function(e){
+          e.preventDefault();
+          socket.emit('kill');
+      })
+      
+    </script>
+
+</body>
